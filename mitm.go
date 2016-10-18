@@ -172,7 +172,8 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		return
 	}
 	
-	fmt.Println(req.Host, req.Header["Cookie"])
+	fmt.Println(req.Host+req.RequestURI)
+	fmt.Println(strings.Join(req.Header["Cookie"], ";"))
 
 	respDump, err := httputil.DumpResponse(respOut, true)
 	if err != nil {
