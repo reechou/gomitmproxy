@@ -172,8 +172,7 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		return
 	}
 	
-	fmt.Println(req.Host+req.RequestURI)
-	fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+	hw.filter(respOut, req)
 
 	respDump, err := httputil.DumpResponse(respOut, true)
 	if err != nil {
@@ -192,6 +191,15 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		<-ch
 	}
 
+}
+
+func (hw *HandlerWrapper) filter(resp *http.ResponseWriter, req *http.Request) {
+	fmt.Println(req.RequestURI)
+	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
+		req.ParseForm()
+		fmt.Println(req.Form.Get("_tb_token_"))
+		fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+	}
 }
 
 func (hw *HandlerWrapper) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
