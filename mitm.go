@@ -207,7 +207,9 @@ type RealTbkSetCookieRsp struct {
 	State int    `json:"state"`
 	Msg   string `json:"msg"`
 }
-
+type ServerReturnRsp struct {
+	OK bool `json:"ok"`
+}
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
 		servRspBody, err := ioutil.ReadAll(resp.Body)
@@ -215,7 +217,17 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			log.Println("server response read body error:", err)
 			return
 		}
-		fmt.Println("server response body:", string(servRspBody))
+		var srvRsp ServerReturnRsp
+		err = json.Unmarshal(servRspBody, &srvRsp)
+		if err != nil {
+			log.Println("response body:", string(servRspBody))
+			log.Println("Unmarshal server return http response error:", err)
+			return
+		}
+		if !srvRsp.OK {
+			fmt.Println("server return not ok. body:", string(servRspBody), time.Now().String())
+			return
+		}
 		
 		req.ParseForm()
 		//fmt.Println(req.Form.Get("_tb_token_"))
@@ -266,10 +278,10 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			return
 		}
 		if response.State == 1000 {
-			logger.Println("set cookies success.")
+			fmt.Println("set cookies success.", time.Now().String())
 			return
 		} else {
-			logger.Println(response.State, "error msg:", response.Msg)
+			fmt.Println(response.State, "error msg:", response.Msg)
 		}
 	}
 }
