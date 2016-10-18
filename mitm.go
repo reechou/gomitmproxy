@@ -268,7 +268,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			log.Println("response read body error:", err)
 			return
 		}
-		fmt.Println("response body:", string(rspBody))
+		//fmt.Println("response body:", string(rspBody))
 
 		var response RealTbkSetCookieRsp
 		err = json.Unmarshal(rspBody, &response)
@@ -281,7 +281,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			fmt.Println("set cookies success.", time.Now().String())
 			return
 		} else {
-			fmt.Println(response.State, "error msg:", response.Msg)
+			fmt.Println(response.State, "error msg:", response.Msg, time.Now().String())
 		}
 	}
 }
