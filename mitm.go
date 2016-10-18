@@ -224,11 +224,12 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		}
 		body, err := json.Marshal(request)
 		if err != nil {
-			return err
+			return
 		}
 		httpReq, err := http.NewRequest("POST", u, strings.NewReader(string(body)))
 		if err != nil {
-			return err
+			log.Println("new http request error:", err)
+			return
 		}
 		httpReq.Header.Set("Content-Type", "application/json")
 
@@ -239,17 +240,19 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			}
 		}()
 		if err != nil {
-			return err
+			log.Println("do http request error:", err)
+			return
 		}
 		rspBody, err := ioutil.ReadAll(rsp.Body)
 		if err != nil {
-			return err
+			return
 		}
 
 		var response RealTbkSetCookieRsp
 		err = json.Unmarshal(rspBody, &response)
 		if err != nil {
-			return err
+			log.Println("Unmarshal http response error:", err)
+			return
 		}
 		if response.State == 1000 {
 			logger.Println("set cookies success.")
