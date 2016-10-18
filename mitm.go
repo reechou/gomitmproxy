@@ -143,6 +143,10 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		if err != nil && err != io.EOF {
 			logger.Println("read response error:", err)
 		}
+		
+		for _, cookie := range respOut.Cookies() {
+			fmt.Println(cookie)
+		}
 
 	} else {
 		if !matched {
