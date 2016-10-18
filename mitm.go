@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -29,6 +31,8 @@ type HandlerWrapper struct {
 	dynamicCerts    *Cache
 	certMutex       sync.Mutex
 	https           bool
+
+	client *http.Client
 }
 
 func (hw *HandlerWrapper) GenerateCertForClient() (err error) {
@@ -171,7 +175,7 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		log.Println("respOut is nil")
 		return
 	}
-	
+
 	hw.filter(respOut, req)
 
 	respDump, err := httputil.DumpResponse(respOut, true)
@@ -193,12 +197,66 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 
 }
 
+type RealTbkSetCookieReq struct {
+	Cookies  string `json:"cookies"`
+	TbToken  string `json:"tbToken"`
+	Siteid   string `json:"Siteid"`
+	Adzoneid string `json:"Adzoneid"`
+}
+type RealTbkSetCookieRsp struct {
+	State int    `json:"state"`
+	Msg   string `json:"msg"`
+}
+
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
-	fmt.Println(req.RequestURI)
 	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
 		req.ParseForm()
-		fmt.Println(req.Form.Get("_tb_token_"))
-		fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+		//fmt.Println(req.Form.Get("_tb_token_"))
+		//fmt.Println(req.Form.Get("adzoneid"))
+		//fmt.Println(req.Form.Get("siteid"))
+		//fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+		u := "http://121.40.85.37/index.php?r=search/setdata"
+		request := &RealTbkSetCookieReq{
+			Cookies:  strings.Join(req.Header["Cookie"], ";"),
+			TbToken:  req.Form.Get("_tb_token_"),
+			Siteid:   req.Form.Get("siteid"),
+			Adzoneid: req.Form.Get("adzoneid"),
+		}
+		body, err := json.Marshal(request)
+		if err != nil {
+			return err
+		}
+		httpReq, err := http.NewRequest("POST", u, strings.NewReader(string(body)))
+		if err != nil {
+			return err
+		}
+		httpReq.Header.Set("Content-Type", "application/json")
+
+		rsp, err := hw.client.Do(httpReq)
+		defer func() {
+			if rsp != nil {
+				rsp.Body.Close()
+			}
+		}()
+		if err != nil {
+			return err
+		}
+		rspBody, err := ioutil.ReadAll(rsp.Body)
+		if err != nil {
+			return err
+		}
+
+		var response RealTbkSetCookieRsp
+		err = json.Unmarshal(rspBody, &response)
+		if err != nil {
+			return err
+		}
+		if response.State == 1000 {
+			logger.Println("set cookies success.")
+			return
+		} else {
+			logger.Println(response.State, "error msg:", response.Msg)
+		}
 	}
 }
 
@@ -296,6 +354,7 @@ func InitConfig(conf *Cfg, tlsConfig *TlsConfig) (*HandlerWrapper, error) {
 		MyConfig:     conf,
 		tlsConfig:    tlsConfig,
 		dynamicCerts: NewCache(),
+		client:       &http.Client{},
 	}
 	err := hw.GenerateCertForClient()
 	if err != nil {
