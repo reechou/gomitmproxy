@@ -176,8 +176,6 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		return
 	}
 
-	hw.filter(respOut, req)
-
 	respDump, err := httputil.DumpResponse(respOut, true)
 	if err != nil {
 		logger.Println("respDump error:", err)
@@ -187,6 +185,8 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 	if err != nil {
 		logger.Println("connIn write error:", err)
 	}
+	
+	hw.filter(respOut, req)
 
 	if *hw.MyConfig.Monitor {
 		<-ch
