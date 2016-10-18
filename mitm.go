@@ -172,9 +172,7 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 		return
 	}
 	
-	for _, cookie := range req.Cookies() {
-		fmt.Println(cookie)
-	}
+	fmt.Println(req.Host, req.Header["Cookie"])
 
 	respDump, err := httputil.DumpResponse(respOut, true)
 	if err != nil {
