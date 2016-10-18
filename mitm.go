@@ -224,6 +224,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		}
 		body, err := json.Marshal(request)
 		if err != nil {
+			log.Println("Marshal error:", err)
 			return
 		}
 		httpReq, err := http.NewRequest("POST", u, strings.NewReader(string(body)))
