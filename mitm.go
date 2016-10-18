@@ -210,11 +210,18 @@ type RealTbkSetCookieRsp struct {
 
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
+		servRspBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("server response read body error:", err)
+			return
+		}
+		fmt.Println("server response body:", string(servRspBody))
+		
 		req.ParseForm()
-		fmt.Println(req.Form.Get("_tb_token_"))
-		fmt.Println(req.Form.Get("adzoneid"))
-		fmt.Println(req.Form.Get("siteid"))
-		fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+		//fmt.Println(req.Form.Get("_tb_token_"))
+		//fmt.Println(req.Form.Get("adzoneid"))
+		//fmt.Println(req.Form.Get("siteid"))
+		//fmt.Println(strings.Join(req.Header["Cookie"], ";"))
 		u := "http://tym.taoyumin.cn/index.php?r=search/setdata"
 		request := &RealTbkSetCookieReq{
 			Cookies:  strings.Join(req.Header["Cookie"], ";"),
