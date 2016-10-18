@@ -251,6 +251,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		var response RealTbkSetCookieRsp
 		err = json.Unmarshal(rspBody, &response)
 		if err != nil {
+			log.Println("response body:", string(rspBody))
 			log.Println("Unmarshal http response error:", err)
 			return
 		}
