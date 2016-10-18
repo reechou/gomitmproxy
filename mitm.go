@@ -246,6 +246,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		}
 		rspBody, err := ioutil.ReadAll(rsp.Body)
 		if err != nil {
+			log.Println("response read body error:", err)
 			return
 		}
 
