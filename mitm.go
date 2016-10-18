@@ -215,7 +215,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		//fmt.Println(req.Form.Get("adzoneid"))
 		//fmt.Println(req.Form.Get("siteid"))
 		//fmt.Println(strings.Join(req.Header["Cookie"], ";"))
-		u := "http://121.40.85.37/index.php?r=search/setdata"
+		u := "http://tym.taoyumin.cn/index.php?r=search/setdata"
 		request := &RealTbkSetCookieReq{
 			Cookies:  strings.Join(req.Header["Cookie"], ";"),
 			TbToken:  req.Form.Get("_tb_token_"),
