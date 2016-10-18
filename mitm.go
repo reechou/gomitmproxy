@@ -193,7 +193,7 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 
 }
 
-func (hw *HandlerWrapper) filter(resp *http.ResponseWriter, req *http.Request) {
+func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	fmt.Println(req.RequestURI)
 	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
 		req.ParseForm()
