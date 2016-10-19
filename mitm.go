@@ -199,9 +199,9 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 
 type RealTbkSetCookieReq struct {
 	Cookies  string `json:"cookies"`
-	TbToken  string `json:"tbToken"`
-	Siteid   string `json:"Siteid"`
-	Adzoneid string `json:"Adzoneid"`
+	TbToken  string `json:"tbToken,omitempty"`
+	Siteid   string `json:"Siteid,omitempty"`
+	Adzoneid string `json:"Adzoneid,omitempty"`
 }
 type RealTbkSetCookieRsp struct {
 	State int    `json:"state"`
@@ -211,7 +211,8 @@ type ServerReturnRsp struct {
 	OK bool `json:"ok"`
 }
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
-	if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
+	//if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
+	if strings.Contains(req.RequestURI, "afpeng.alimama.com") {
 		servRspBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Println("server response read body error:", err)
@@ -229,7 +230,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			return
 		}
 		
-		req.ParseForm()
+		//req.ParseForm()
 		//fmt.Println(req.Form.Get("_tb_token_"))
 		//fmt.Println(req.Form.Get("adzoneid"))
 		//fmt.Println(req.Form.Get("siteid"))
@@ -237,9 +238,9 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		u := "http://tym.taoyumin.cn/index.php?r=search/setdata"
 		request := &RealTbkSetCookieReq{
 			Cookies:  strings.Join(req.Header["Cookie"], ";"),
-			TbToken:  req.Form.Get("_tb_token_"),
-			Siteid:   req.Form.Get("siteid"),
-			Adzoneid: req.Form.Get("adzoneid"),
+			//TbToken:  req.Form.Get("_tb_token_"),
+			//Siteid:   req.Form.Get("siteid"),
+			//Adzoneid: req.Form.Get("adzoneid"),
 		}
 		body, err := json.Marshal(request)
 		if err != nil {
