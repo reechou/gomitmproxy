@@ -213,22 +213,22 @@ type ServerReturnRsp struct {
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	//if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
 	if strings.Contains(req.RequestURI, "afpeng.alimama.com") {
-		servRspBody, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("server response read body error:", err)
-			return
-		}
-		var srvRsp ServerReturnRsp
-		err = json.Unmarshal(servRspBody, &srvRsp)
-		if err != nil {
-			log.Println("response body:", string(servRspBody))
-			log.Println("Unmarshal server return http response error:", err)
-			return
-		}
-		if !srvRsp.OK {
-			fmt.Println("server return not ok. body:", string(servRspBody), time.Now().String())
-			return
-		}
+		//servRspBody, err := ioutil.ReadAll(resp.Body)
+		//if err != nil {
+		//	log.Println("server response read body error:", err)
+		//	return
+		//}
+		//var srvRsp ServerReturnRsp
+		//err = json.Unmarshal(servRspBody, &srvRsp)
+		//if err != nil {
+		//	log.Println("response body:", string(servRspBody))
+		//	log.Println("Unmarshal server return http response error:", err)
+		//	return
+		//}
+		//if !srvRsp.OK {
+		//	fmt.Println("server return not ok. body:", string(servRspBody), time.Now().String())
+		//	return
+		//}
 		
 		//req.ParseForm()
 		//fmt.Println(req.Form.Get("_tb_token_"))
