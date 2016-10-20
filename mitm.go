@@ -212,7 +212,7 @@ type ServerReturnRsp struct {
 }
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	//if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
-	if strings.Contains(req.RequestURI, "pub.alimama.com") || strings.Contains(req.RequestURI, "afeng.alimama.com") {
+	if strings.Contains(req.RequestURI, "pub.alimama.com") || strings.Contains(req.RequestURI, "afpeng.alimama.com") {
 		//servRspBody, err := ioutil.ReadAll(resp.Body)
 		//if err != nil {
 		//	log.Println("server response read body error:", err)
