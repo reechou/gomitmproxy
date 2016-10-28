@@ -207,12 +207,15 @@ type RealTbkSetCookieRsp struct {
 	State int    `json:"state"`
 	Msg   string `json:"msg"`
 }
+type Data struct {
+	ImgUrlPrefix string `json:"imgUrlPrefix"`
+}
 type ServerReturnRsp struct {
 	OK bool `json:"ok"`
 }
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	//if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
-	if strings.Contains(req.RequestURI, "pub.alimama.com") || strings.Contains(req.RequestURI, "afpeng.alimama.com") {
+	if strings.HasPrefix(req.RequestURI, "http://pub.alimama.com") || strings.HasPrefix(req.RequestURI, "http://afpeng.alimama.com") {
 		//servRspBody, err := ioutil.ReadAll(resp.Body)
 		//if err != nil {
 		//	log.Println("server response read body error:", err)
