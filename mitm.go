@@ -185,7 +185,7 @@ func (hw *HandlerWrapper) DumpHTTPAndHTTPs(resp http.ResponseWriter, req *http.R
 	if err != nil {
 		logger.Println("connIn write error:", err)
 	}
-	
+
 	hw.filter(respOut, req)
 
 	if *hw.MyConfig.Monitor {
@@ -202,6 +202,7 @@ type RealTbkSetCookieReq struct {
 	TbToken  string `json:"tbToken,omitempty"`
 	Siteid   string `json:"Siteid,omitempty"`
 	Adzoneid string `json:"Adzoneid,omitempty"`
+	MemberId int64  `json:"memberid"`
 }
 type RealTbkSetCookieRsp struct {
 	State int    `json:"state"`
@@ -209,41 +210,37 @@ type RealTbkSetCookieRsp struct {
 }
 type Data struct {
 	ImgUrlPrefix string `json:"imgUrlPrefix"`
+	MemberId     int64  `json:"memberid"`
 }
 type ServerReturnRsp struct {
+	D  Data `json:"data"`
 	OK bool `json:"ok"`
 }
+
 func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 	//if strings.Contains(req.RequestURI, "pub.alimama.com/common/code/getAuctionCode.json") {
-	if strings.HasPrefix(req.RequestURI, "http://pub.alimama.com") || strings.HasPrefix(req.RequestURI, "http://afpeng.alimama.com") {
-		//servRspBody, err := ioutil.ReadAll(resp.Body)
-		//if err != nil {
-		//	log.Println("server response read body error:", err)
-		//	return
-		//}
-		//var srvRsp ServerReturnRsp
-		//err = json.Unmarshal(servRspBody, &srvRsp)
-		//if err != nil {
-		//	log.Println("response body:", string(servRspBody))
-		//	log.Println("Unmarshal server return http response error:", err)
-		//	return
-		//}
-		//if !srvRsp.OK {
-		//	fmt.Println("server return not ok. body:", string(servRspBody), time.Now().String())
-		//	return
-		//}
-		
-		//req.ParseForm()
-		//fmt.Println(req.Form.Get("_tb_token_"))
-		//fmt.Println(req.Form.Get("adzoneid"))
-		//fmt.Println(req.Form.Get("siteid"))
-		//fmt.Println(strings.Join(req.Header["Cookie"], ";"))
+	if strings.Contains(req.RequestURI, "http://pub.alimama.com/common/getUnionPubContextInfo.json") {
+		servRspBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("server response read body error:", err)
+			return
+		}
+		fmt.Println("*-* server response:", string(servRspBody))
+		var srvRsp ServerReturnRsp
+		err = json.Unmarshal(servRspBody, &srvRsp)
+		if err != nil {
+			log.Println("response body:", string(servRspBody))
+			log.Println("Unmarshal server return http response error:", err)
+			return
+		}
+
 		u := "http://tym.taoyumin.cn/index.php?r=search/setdata"
 		request := &RealTbkSetCookieReq{
-			Cookies:  strings.Join(req.Header["Cookie"], ";"),
+			Cookies: strings.Join(req.Header["Cookie"], ";"),
 			//TbToken:  req.Form.Get("_tb_token_"),
 			//Siteid:   req.Form.Get("siteid"),
 			//Adzoneid: req.Form.Get("adzoneid"),
+			MemberId: srvRsp.D.MemberId,
 		}
 		body, err := json.Marshal(request)
 		if err != nil {
@@ -272,7 +269,6 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			log.Println("response read body error:", err)
 			return
 		}
-		//fmt.Println("response body:", string(rspBody))
 
 		var response RealTbkSetCookieRsp
 		err = json.Unmarshal(rspBody, &response)
@@ -282,8 +278,8 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			return
 		}
 		if response.State == 1000 {
-			fmt.Println("URI:", req.RequestURI)
-			fmt.Println("set cookies success. cookie:", strings.Join(req.Header["Cookie"], ";"), time.Now().String())
+			fmt.Println("*--* URI:", req.RequestURI)
+			fmt.Println("*---* set cookies success. cookie:", strings.Join(req.Header["Cookie"], ";"), time.Now().String())
 			return
 		} else {
 			fmt.Println(response.State, "error msg:", response.Msg, time.Now().String())
