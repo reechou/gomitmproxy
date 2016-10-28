@@ -279,7 +279,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 		}
 		if response.State == 1000 {
 			fmt.Println("*--* URI:", req.RequestURI)
-			fmt.Println("*---* set cookies success. cookie:", strings.Join(req.Header["Cookie"], ";"), time.Now().String())
+			fmt.Println("*---* set cookies success. cookie req:", string(body), time.Now().String())
 			return
 		} else {
 			fmt.Println(response.State, "error msg:", response.Msg, time.Now().String())
