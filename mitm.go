@@ -242,6 +242,7 @@ func (hw *HandlerWrapper) filter(resp *http.Response, req *http.Request) {
 			//Adzoneid: req.Form.Get("adzoneid"),
 			MemberId: srvRsp.D.MemberId,
 		}
+		fmt.Println("**--** set cookie memberid:", request.MemberId, "cookie:", request.Cookies)
 		body, err := json.Marshal(request)
 		if err != nil {
 			log.Println("Marshal error:", err)
